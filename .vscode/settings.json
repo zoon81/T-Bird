@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "main.h": "c",
+        "nrf24l01.h": "c",
+        "io.h": "c",
+        "delay.h": "c",
+        "uart.h": "c",
+        "spi.h": "c",
+        "interrupt.h": "c"
+    }
+}

@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "name": "AVR",
+            "includePath": [
+                "/usr/lib/avr/include",
+                "/usr/lib/avr/include/avr",
+                "${workspaceRoot}/inc",
+                "${workspaceRoot}/HAL/inc",
+                "${workspaceRoot}/drivers/inc"
+            ],
+            "defines": ["__AVR_ATmega128__"],
+            "intelliSenseMode": "clang-x64",
+            "browse": {
+                "path": [
+                    "/usr/lib/avr/include",
+                    "${workspaceRoot}/inc",
+                    "${workspaceRoot}/utils",
+                    "${workspaceRoot}/HAL",
+                    "${workspaceRoot}/drivers"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        }
+    ],
+    "version": 3
+}
