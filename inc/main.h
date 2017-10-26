@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include <avr/interrupt.h>
 #include "sevseg.h"
+#include "lcd.h"
 
 #define BIT(x) (1 << (x))
 
