@@ -35,7 +35,7 @@ EFU =
 SRC = $(PRJ).cpp
 # where to look for external libraries (consisting of .c/.cpp files and .h files)
 # e.g. EXT = ../../EyeToSee ../../YouSART
-EXT = ./inc ./utils ./HAL/ ./HAL/inc ./drivers ./drivers/inc
+EXT = ./inc ./utils ./utils/inc ./HAL/ ./HAL/inc ./drivers ./drivers/inc
 
 
 #################################################################################################

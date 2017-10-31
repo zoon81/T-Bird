@@ -7,6 +7,7 @@
                 "/usr/lib/avr/include/avr",
                 "${workspaceRoot}/inc",
                 "${workspaceRoot}/HAL/inc",
+                "${workspaceRoot}/utils/inc",
                 "${workspaceRoot}/drivers/inc"
             ],
             "defines": ["__AVR_ATmega128__"],

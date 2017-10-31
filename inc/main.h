@@ -8,6 +8,8 @@
 #include <avr/interrupt.h>
 #include "sevseg.h"
 #include "lcd.h"
+#include "keymatrix.h"
+#include "itoa.h"
 
 #define BIT(x) (1 << (x))
 
