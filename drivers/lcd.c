@@ -70,4 +70,17 @@ void LCD_sendbyte(uint8_t data) {
 	LCD_data_Port = (LCD_data_Port & 0x0F) | (data << 4); //lower 4bit, Clearing the upper 4bit of LCD_data_Port and inserting here the data lower 4 bit by shifting it with 4
 	LCD_CLOCK_OUT
 }
-
+//set a custom char at cgrampos location (gcram max is 8)
+void LCD_setCustomChar(uint8_t cgrampos, uint8_t *pixmap){
+	LCD_Command(0x40 + (cgrampos * 8));
+	LCD_Data(*pixmap++);
+	LCD_Data(*pixmap++);
+	LCD_Data(*pixmap++);
+	LCD_Data(*pixmap++);
+	LCD_Data(*pixmap++);
+	LCD_Data(*pixmap++);
+	LCD_Data(*pixmap++);
+	LCD_Data(*pixmap++);
+	//set right RAM location for future work
+	LCD_Command(0x80);
+}
