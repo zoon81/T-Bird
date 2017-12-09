@@ -15,6 +15,9 @@ void sevseg_init()
     TIMSK = BIT(OCIE0);
     sei();
 }
+void sevseg_setdigit(uint8_t digit, uint8_t value){
+    values[digit] = value;
+}
 void sevseg_putvalue(uint8_t digit, uint8_t value)
 {
     PORTA = (value & 0x0F) | (digit << 4) | (1 << 7);
