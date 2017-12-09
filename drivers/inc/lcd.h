@@ -25,5 +25,6 @@ void LCD_String_xy(uint8_t row, uint8_t pos, char *str);
 void LCD_Clear();
 void LCD_sendbyte(uint8_t data);
 void LCD_setCustomChar(uint8_t cgrampos, uint8_t *pixmap);
+void LCD_Clear_xy(uint8_t row, uint8_t from, uint8_t len);
 
 #endif /* INC_M_LCD_H_ */

@@ -2,77 +2,31 @@
 
 void main()
 {
-    // cake form 1
-    uint8_t pixmap[8] = {
-        0b10100,
-        0b00000,
-        0b01010,
-        0b01010,
-        0b01010,
-        0b11111,
-        0b11111,
-        0b11111};
-    // cake form 2
-    uint8_t pixmap2[8] = {
-        0b00101,
-        0b00000,
-        0b01010,
-        0b01010,
-        0b01010,
-        0b11111,
-        0b11111,
-        0b11111};
-    // ö char
-    uint8_t customChar1[8] = {
-        0b01010,
-        0b00000,
-        0b01110,
-        0b10001,
-        0b10001,
-        0b10001,
-        0b10001,
-        0b01110};
-    // í char
-    uint8_t customChar2[8] = {
-        0b00010,
-        0b00100,
-        0b00000,
-        0b00100,
-        0b00100,
-        0b00100,
-        0b00100,
-        0b01110};
     keyboardmatrix_init();
     LCD_Init();
-    LCD_setCustomChar(0, pixmap);
-    LCD_setCustomChar(1, pixmap2);
-    LCD_setCustomChar(2, customChar1);
-    LCD_setCustomChar(3, customChar2);
-    LCD_String_xy(0, 4, "\0");
-    LCD_Data(2);
-    LCD_Data(3);
-    //TIMER3 IRQ every 1s
-    OCR3A = 7812;
-    TCCR3B = BIT(CS30) | BIT(CS32) | BIT(WGM32); //1024 prescale, CTC
-    OCR3A = 100;
-    TIMSK = BIT(TOIE1);
-    sei();
+
+    //TIMER3 PWM, Phase Correct, 8-bit
+    OCR3A = 127;
+    TCCR3A |= BIT(WGM30) | BIT(COM3A1);
+    TCCR3B |= BIT(CS32);   //  256 prescale
+    DDRE |= BIT(PE3);
     //uint8_t buffer[7];
     //uint16_to_str(buffer, 123456);
     //LCD_String_xy(2, 0, buffer);
+    LCD_String_xy(0,0, "PWM value(0-255)");
     
-    uint8_t i;
     while (1)
     {
-        LCD_String_xy(3, 0, "");
-        i = 16;
-        while (i--)
-            LCD_Data(0);
-        _delay_ms(800);
-        LCD_String_xy(3, 0, "");
-        i = 16;
-        while (i--)
-            LCD_Data(1);
-        _delay_ms(800);
+        LCD_Clear_xy(2,0,15);
+        LCD_String_xy(2,0, "Current val:");
+        char ocr_value[4];
+        uint8_to_str(ocr_value, (uint8_t) OCR3A);
+        LCD_String(ocr_value);
+        LCD_Clear_xy(3,0,15);
+        LCD_String_xy(3,0,"New value: ");
+        uint8_t new_ocr_val = keyboardmatrix_getint_16(LCD_Data);
+        if(new_ocr_val < 255){
+            OCR3A = new_ocr_val;
+        }
     }
 }

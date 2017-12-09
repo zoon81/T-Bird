@@ -33,10 +33,9 @@ void LCD_Init(void)
 
 void LCD_String(char *str) /* Send string to LCD function */
 {
-	int i;
-	for (i = 0; str[i] != 0; i++) /* Send each char of string till the NULL */
+	while(*str) /* Send each char of string till the NULL */
 	{
-		LCD_Data(str[i]);
+		LCD_Data(*str++);
 	}
 }
 
@@ -57,6 +56,16 @@ void LCD_String_xy(uint8_t row, uint8_t pos, char *str) /* Send string to LCD wi
 	else if (row == 3 && pos < 16)
 		LCD_Command((pos & 0x0F) | 0xD0); 
 	LCD_String(str); 
+}
+// Clear the content of the given $row from specified position $from and clear $len number of position. After that, It will rewind the pointer to the original place
+void LCD_Clear_xy(uint8_t row, uint8_t from, uint8_t len){
+	LCD_String_xy(row, from, 0);
+	if( (from + len) < 16 ){
+		while(len--){
+			LCD_Data(0x20);
+		}
+	}
+	LCD_String_xy(row, from-1, 0);
 }
 
 void LCD_Clear() {
