@@ -5,6 +5,9 @@
             "includePath": [
                 "/usr/lib/avr/include",
                 "/usr/lib/avr/include/avr",
+                "/usr/local/Cellar/avr-gcc/7.2.0/avr/include",
+                "/usr/local/Cellar/avr-gcc/7.2.0/avr/include/avr",
+                "/usr/local/Cellar/avr-gcc/7.2.0/avr/include/util",
                 "${workspaceRoot}/inc",
                 "${workspaceRoot}/HAL/inc",
                 "${workspaceRoot}/utils/inc",
@@ -15,9 +18,11 @@
             "browse": {
                 "path": [
                     "/usr/lib/avr/include",
+                    "/usr/local/Cellar/avr-gcc/7.2.0/avr/include",
                     "${workspaceRoot}/inc",
                     "${workspaceRoot}/utils",
                     "${workspaceRoot}/HAL",
+                    "${workspaceRoot}/HAL/inc",
                     "${workspaceRoot}/drivers"
                 ],
                 "limitSymbolsToIncludedHeaders": true,

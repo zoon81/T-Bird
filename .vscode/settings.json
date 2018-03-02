@@ -7,6 +7,11 @@
         "uart.h": "c",
         "spi.h": "c",
         "interrupt.h": "c",
-        "lcd.h": "c"
+        "lcd.h": "c",
+        "itoa.h": "c",
+        "iom128.h": "c",
+        "inttypes.h": "c",
+        "sevseg.h": "c",
+        "keymatrix.h": "c"
     }
 }

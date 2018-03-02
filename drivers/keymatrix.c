@@ -49,7 +49,7 @@ uint8_t keyboardmatrix_getchar()
 {
     uint8_t scancodes[] = {0x45, 0x0E, 0x0D, 0x0B, 0x16, 0x15, 0x13, 0x26, 0x25, 0x23, 0x46, 0x43};
     uint8_t index = 12;
-    uint8_t c;
+    uint8_t c = 0;
     uint8_t scancode = keyboardmatrix_read();
     while (index--)
     {
