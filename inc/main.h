@@ -12,6 +12,20 @@
 #include "uart.h"
 
 #define BIT(x) (1 << (x))
+#define SW_K0 PG0
+#define SW_K1 PG1
+#define SW_K2 PG2
+#define SW_K3 PG3
+#define SW_K4 PG4
+struct pindesc_s{
+    volatile uint8_t *port;
+    uint8_t pin;
+};
+
+struct blink_state_s{
+    uint8_t blinking_pins;
+    struct pindesc_s pindesc[2];
+};
 
 struct portstate_s{
     uint8_t port_a;
@@ -19,13 +33,20 @@ struct portstate_s{
     uint8_t port_e;
     uint8_t port_f;
     uint8_t period;
+    struct blink_state_s blinkstate;
 };
 
+#define BLINK_NONE 8
 #define RW_RED_1 PF1
 #define RW_RED_2 PF2
 #define RW_WHITE PF3
 #define RW_SENSE_LEFT PE4
 #define RW_SENSE_RIGHT PE5
+#define RW_TRAIN_GONE 0
+#define RW_TRAIN_FROMLEFT 1
+#define RW_TRAIN_FROMRIGHT 2
+#define RW_TRAIN_RED 7
+#define TC_RAILWAY_CLOSED_STATE 8
 
 
 #endif

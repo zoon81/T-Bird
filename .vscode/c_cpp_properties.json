@@ -13,7 +13,9 @@
                 "${workspaceRoot}/utils/inc",
                 "${workspaceRoot}/drivers/inc"
             ],
-            "defines": ["__AVR_ATmega128__"],
+            "defines": [
+                "__AVR_ATmega128__"
+            ],
             "intelliSenseMode": "clang-x64",
             "browse": {
                 "path": [
@@ -25,9 +27,11 @@
                     "${workspaceRoot}/HAL/inc",
                     "${workspaceRoot}/drivers"
                 ],
-                "limitSymbolsToIncludedHeaders": true,
-                "databaseFilename": ""
-            }
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
         }
     ],
     "version": 3
