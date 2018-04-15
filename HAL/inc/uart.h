@@ -15,4 +15,9 @@ void UART0_sendbyte(uint8_t data);
 uint8_t UART0_receivebyte();
 void UART0_sendString(char *str);
 void UART0_setReceiverCallback( void (*UartCallback)(uint8_t) );
+void UART1_Init(uart_baud_t baudrate);
+void UART1_sendbyte(uint8_t data);
+uint8_t UART1_receivebyte();
+void UART1_sendString(char *str);
+void UART1_setReceiverCallback( void (*UartCallback)(uint8_t) );
 #endif

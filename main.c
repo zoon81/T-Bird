@@ -2,101 +2,88 @@
 #include <stdlib.h>
 
 void setleds(uint8_t);
-void uartReceiveCallBack(uint8_t);
+void uart0ReceiveCallBack(uint8_t);
+void uart1ReceiveCallBack(uint8_t);
+void rs485_setReceiverMode();
+void rs485_setTransmitMode();
+
+#define FIFO_SIZE 64
+char fifo_buffer[FIFO_SIZE];
+char *buffer_ptr_w = fifo_buffer;
+uint8_t buffer_w_len = 0;
+uint8_t buffer_w_pos = 1;
+char *buffer_ptr_r = fifo_buffer;
+uint8_t buffer_r_pos = 0;
+
+#define RS485_START 0xF4;
+#define RS485_MID 0x10;
+#define RS485_SLID 0x21;
+#define RS485_MULTIC 0x30;
+#define RS485_STOP 0x4F;
 
 void main()
 {
-    LCD_Init();
-    LCD_String_xy(0, 0, "UART CALC");
-    LCD_String_xy(1, 0, "Hit #for + - * /");
-    UART0_Init(BAUD_9600);
-    UART0_sendString("\n\n\n\rUART Calculator\n\rUse the keypad on the T-bird to enter the function\n\r");
-    UART0_setReceiverCallback(uartReceiveCallBack);
-    keyboardmatrix_init();
-    uint16_t num1 = 0;
-    uint16_t num2 = 0;
-    char buffer[7] = {0};
-    char *buffer_ptr = buffer;
-    char op_symb[] = {'/', '+', '-', '*'};
-    uint8_t op_symb_index = 0;
-    LCD_String_xy(2, 0, "");
-    do
-    {
-        *buffer_ptr = keyboardmatrix_getchar();
+    DDRB = 0xF0;
+    DDRC = BIT(PC7);
+    DDRE = BIT(PE2);
+    uint16_t adresult, celsius;
+    UART0_Init(51);
+    UART1_Init(51);
+    UART0_sendString("\n\rHey\n\r");
+    UART0_setReceiverCallback(uart0ReceiveCallBack);
+    //rs485_setTransmitMode();
+    //UART1_sendbyte(0xff);
+    rs485_setReceiverMode();
+    UART1_setReceiverCallback(uart1ReceiveCallBack);
 
-        if (*buffer_ptr == '#')
-        {
-            *buffer_ptr = 0;
-            num1 = atoi_(buffer);
-            buffer_ptr = buffer;
-            UART0_sendbyte(' ');
-            UART0_sendString("\x1B\x5B\x43");
-            do
-            {
-                LCD_String_xy(2, 6, "");
-                UART0_sendString("\x1B\x5B\x44");
-                ++op_symb_index;
-                if (op_symb_index > 3)
-                {
-                    op_symb_index = 0;
-                }
-                LCD_Data(op_symb[op_symb_index]);
-                UART0_sendbyte(op_symb[op_symb_index]);
-                LCD_String("  ");
-                *buffer_ptr = keyboardmatrix_getchar();
-            } while (*buffer_ptr == '#');
-            UART0_sendbyte(' ');
-        }
-        if ((*buffer_ptr >= 48) && (*buffer_ptr < 58))
-        {
-            LCD_Data(*buffer_ptr);
-            UART0_sendbyte(*buffer_ptr);
-            buffer_ptr++;
-        }
-    } while (*buffer_ptr != '*');
-    *buffer_ptr = 0;
-    num2 = atoi_(buffer);
-    int16_t result = 0;
-    switch (op_symb[op_symb_index])
-    {
-    case '+':
-        result = num1 + num2;
-        break;
-    case '-':
-        result = num1 - num2;
-        break;
-    case '*':
-        result = num1 * num2;
-        break;
-    case '/':
-        result = num1 / num2;
-        break;
-    default:
-        break;
-    }
-    uint16_to_str(buffer, num1);
-    LCD_String_xy(3, 0, buffer);
-    LCD_Data(op_symb[op_symb_index]);
-    uint16_to_str(buffer, num2);
-    LCD_String(buffer);
-    LCD_String("=");
-    UART0_sendString(" = ");
-    int16_to_str(buffer, result);
-    LCD_String(buffer);
-    UART0_sendString(buffer);
-    while (1)
-    {
+    while (1){
     }
 }
 
-void setleds(uint8_t value)
-{
-    PORTD = (value & 0xF0);
-    PORTB = ((value & 0x0F) << 4);
-}
-
-void uartReceiveCallBack(uint8_t data)
-{
-
+void uart0ReceiveCallBack(uint8_t data){
     UART0_sendbyte(data);
+}
+
+void uart1ReceiveCallBack(uint8_t data){
+    UART0_sendbyte(data);
+}
+
+void rs485_setReceiverMode(){
+    PORTC &= ~BIT(PC7);
+    PORTE &= ~BIT(PE2); 
+}
+void rs485_setTransmitMode(){
+    PORTC |= BIT(PC7);
+    PORTE |= BIT(PE2);
+}
+uint8_t fifo_readOut(char *buffer, uint8_t len){
+    if(buffer_w_len < len){                             //Check fifo len
+        len = buffer_w_len;
+    }
+    uint8_t i;                                          //Copy from FiFo to buffer
+    for(i = 0; i < len; i++){
+        if(buffer_r_pos > FIFO_SIZE)
+            buffer_r_pos = 0;
+        
+        buffer[i] = buffer_ptr_r[buffer_r_pos++];       
+    }
+    buffer_ptr_r = &buffer_ptr_r[buffer_r_pos];         //Set fifo read pointer
+    return len;
+}
+
+uint8_t fifo_writeIn(char *buffer, uint8_t len){
+    if(buffer_r_pos == buffer_w_pos){                   // Out of space
+        return 0;
+    }
+    if(len > FIFO_SIZE){                                //Size limit
+        len = FIFO_SIZE;
+    }
+    uint8_t i;
+    for(i < 0 ; i < len; i++){
+        if(buffer_w_pos > FIFO_SIZE)
+            buffer_w_pos = 0;
+        buffer_ptr_w[buffer_w_pos++] = buffer[i];
+    }
+    buffer_ptr_w = buffer_ptr_w[buffer_w_pos];       
+
 }
