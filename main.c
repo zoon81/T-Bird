@@ -15,12 +15,6 @@ uint8_t buffer_w_pos = 1;
 char *buffer_ptr_r = fifo_buffer;
 uint8_t buffer_r_pos = 0;
 
-#define RS485_START 0xF4;
-#define RS485_MID 0x10;
-#define RS485_SLID 0x21;
-#define RS485_MULTIC 0x30;
-#define RS485_STOP 0x4F;
-
 void main()
 {
     DDRB = 0xF0;
@@ -48,14 +42,7 @@ void uart1ReceiveCallBack(uint8_t data){
     UART0_sendbyte(data);
 }
 
-void rs485_setReceiverMode(){
-    PORTC &= ~BIT(PC7);
-    PORTE &= ~BIT(PE2); 
-}
-void rs485_setTransmitMode(){
-    PORTC |= BIT(PC7);
-    PORTE |= BIT(PE2);
-}
+
 uint8_t fifo_readOut(char *buffer, uint8_t len){
     if(buffer_w_len < len){                             //Check fifo len
         len = buffer_w_len;
