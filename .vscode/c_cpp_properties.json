@@ -5,13 +5,11 @@
             "includePath": [
                 "/usr/lib/avr/include",
                 "/usr/lib/avr/include/avr",
-                "/usr/local/Cellar/avr-gcc/7.2.0/avr/include",
-                "/usr/local/Cellar/avr-gcc/7.2.0/avr/include/avr",
-                "/usr/local/Cellar/avr-gcc/7.2.0/avr/include/util",
                 "${workspaceRoot}/inc",
                 "${workspaceRoot}/HAL/inc",
                 "${workspaceRoot}/utils/inc",
-                "${workspaceRoot}/drivers/inc"
+                "${workspaceRoot}/drivers/inc",
+                "/usr/local/CrossPack-AVR-20131216/avr/include"
             ],
             "defines": [
                 "__AVR_ATmega128__"
@@ -20,7 +18,7 @@
             "browse": {
                 "path": [
                     "/usr/lib/avr/include",
-                    "/usr/local/Cellar/avr-gcc/7.2.0/avr/include",
+                    "/usr/local/CrossPack-AVR/avr/include/",
                     "${workspaceRoot}/inc",
                     "${workspaceRoot}/utils",
                     "${workspaceRoot}/HAL",

@@ -24,7 +24,7 @@ struct pindesc_s{
 
 struct blink_state_s{
     uint8_t blinking_pins;
-    struct pindesc_s pindesc[2];
+    struct pindesc_s pindesc[5];
 };
 
 struct portstate_s{
@@ -42,10 +42,12 @@ struct portstate_s{
 #define RW_WHITE PF3
 #define RW_SENSE_LEFT PE4
 #define RW_SENSE_RIGHT PE5
-#define RW_TRAIN_GONE 0
-#define RW_TRAIN_FROMLEFT 1
-#define RW_TRAIN_FROMRIGHT 2
-#define RW_TRAIN_RED 7
+#define MODE_TRAIN_GONE 0
+#define MODE_TRAIN_FROM_LEFT 1
+#define MODE_TRAIN_FROM_RIGHT 2
+#define MODE_SERVICE_REQUEST 5
+#define MODE_SERVICE 6
+#define MODE_TRAIN_RED 7
 #define TC_RAILWAY_CLOSED_STATE 8
 
 

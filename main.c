@@ -2,9 +2,10 @@
 
 #define SYSTICK_DIVIDER 4
 #define STATES 10
+#define SERVICE_STATE 10
 
-// @ToDo :  BUG -- tc set rw lamps too when waiting for state 8
-//          BUG -- rw lamp stay red while stepstate() not called after the TRAIN_GONE state
+// @ToDo :  BUG -- tc set rw lamps too when waiting for state 8                                 DONE
+//          BUG -- rw lamp stay red while stepstate() not called after the TRAIN_GONE state     DONE
 
 void stepState();
 
@@ -18,10 +19,11 @@ struct portstate_s portstate_lookup[] = {
     {0b10001010, 0b00100100, 0b01000100, 0b00000001, 2, { 1, {{&PORTF, PF0}} } },
     {0b10001001, 0b01101100, 0b01000100, 0b00000000, 1, { 0, {} } },
     {0b10001001, 0b10010000, 0b10000100, 0b00000000, 5, { 0, {} } },
-    {0b10001001, 0b01001000, 0b10000100, 0b00000000, 2, { 1, {{&PORTE, PE7}} } }
+    {0b10001001, 0b01001000, 0b10000100, 0b00000000, 2, { 1, {{&PORTE, PE7}} } },
+    {0x00, 0x00, 0x00, 0x00, 1, {5, { {&PORTC, PC0}, {&PORTC, PC3}, {&PORTA, PA1}, {&PORTA, PA4}, {&PORTC, PC6}}}}
 };
 
-volatile uint8_t state, systick, train;
+volatile uint8_t state, systick, mode;
 
 void main()
 {
@@ -37,7 +39,7 @@ void main()
 
     state = 0;                                                      //State of the traffic lamps
     systick = 0;                                                    //Serious timer function, just like an RTOS
-    train = BIT(RW_TRAIN_GONE);                                     //State of the railway
+    mode = BIT(MODE_TRAIN_GONE);                                    //Default mode
 
     if (PING & BIT(SW_K2))                                         //Debug mode check, If this mod is set, we can steping trought the lookup table via K2 switch
     {
@@ -62,20 +64,39 @@ void main()
     while (1)
     {
         //Sense from left
-        if(train & BIT(RW_TRAIN_FROMLEFT)){
-            train |= BIT(RW_TRAIN_RED);                                                             //Turing RW RED ON
-            while(state != TC_RAILWAY_CLOSED_STATE & !(train & BIT(RW_TRAIN_FROMRIGHT)));           //Waiting while the tc reach this state
-            train &= ~BIT(RW_TRAIN_GONE);                                                           //Pause tc at this state
-            while( !(train & BIT(RW_TRAIN_FROMRIGHT)));                                             //Wait for the train while reaching the oposite sense switch
-            train = BIT(RW_TRAIN_GONE);                                                             //Start tc again
+        if(mode & BIT(MODE_TRAIN_FROM_LEFT)){
+            PORTF &= ~BIT(RW_WHITE);                                                                //Turn White OFF
+            mode |= BIT(MODE_TRAIN_RED);                                                             //Turing RW RED ON
+            while((state != TC_RAILWAY_CLOSED_STATE) & !(mode & BIT(MODE_TRAIN_FROM_RIGHT)));           //Waiting while the tc reach this state
+            mode &= ~BIT(MODE_TRAIN_GONE);                                                           //Pause tc at this state
+            while( !(mode & BIT(MODE_TRAIN_FROM_RIGHT)));                                             //Wait for the train while reaching the oposite sense switch
+            mode &= BIT(MODE_SERVICE) | BIT(MODE_SERVICE_REQUEST);                                   //Start tc again
+            mode |= BIT(MODE_TRAIN_GONE);
+            PORTF &= ~ (BIT(RW_RED_1) | BIT(RW_RED_2));                                             //Turn RED OFF
         }
         //Sense from right
-        if(train & BIT(RW_TRAIN_FROMRIGHT)){
-            train |= BIT(RW_TRAIN_RED);                                                             //Turing RW RED ON
-            while(state != TC_RAILWAY_CLOSED_STATE & !(train & BIT(RW_TRAIN_FROMLEFT)));            //Waiting while the tc reach this state
-            train &= ~BIT(RW_TRAIN_GONE);                                                           //Pause tc at this state
-            while( !(train & BIT(RW_TRAIN_FROMLEFT)));                                              //Wait for the train reach the oposite sense switch
-            train = BIT(RW_TRAIN_GONE);                                                             //Start tc again
+        if(mode & BIT(MODE_TRAIN_FROM_RIGHT)){
+            PORTF &= ~BIT(RW_WHITE);                                                                //Turn White OFF
+            mode |= BIT(MODE_TRAIN_RED);                                                             //Turing RW RED ON
+            while((state != TC_RAILWAY_CLOSED_STATE) & !(mode & BIT(MODE_TRAIN_FROM_LEFT)));            //Waiting while the tc reach this state
+            mode &= ~BIT(MODE_TRAIN_GONE);                                                              //Pause tc at this state
+            while( !(mode & BIT(MODE_TRAIN_FROM_LEFT)));                                                //Wait for the train reach the oposite sense switch
+            mode &= BIT(MODE_SERVICE) | BIT(MODE_SERVICE_REQUEST);                                       //Start tc again (MASK SERVICE bits)
+            mode |= BIT(MODE_TRAIN_GONE);
+            PORTF &= ~ (BIT(RW_RED_1) | BIT(RW_RED_2));                                                 //Turn RED OFF
+        }
+        //Service mode
+        if(mode & BIT(MODE_SERVICE_REQUEST)){                                                       //Turn ON service mode
+            if((mode & BIT(MODE_TRAIN_GONE)) && (state == 0)){
+                state = SERVICE_STATE;
+                stepState();
+                mode |= BIT(MODE_SERVICE);
+            }
+        } else if(mode & BIT(MODE_SERVICE)){                                                        //Turn OFF service mode
+            state = 0;
+            systick = 0;
+            mode &= ~BIT(MODE_SERVICE);
+            stepState();
         }
     }
 }
@@ -90,7 +111,7 @@ ISR(TIMER1_COMPA_vect)
         }
     }
     // blink for railway
-    if(train & BIT(RW_TRAIN_RED)){
+    if(mode & BIT(MODE_TRAIN_RED)){
         PORTF ^= BIT(RW_RED_1);
         if(PORTF & BIT(RW_RED_1)){
             PORTF &= ~(BIT(RW_RED_2));
@@ -100,8 +121,8 @@ ISR(TIMER1_COMPA_vect)
     } else {
         PORTF ^= BIT(RW_WHITE);
     }
-    //tc controll
-    if(train & BIT(RW_TRAIN_GONE)){
+    //tc control
+    if( (mode & BIT(MODE_TRAIN_GONE)) && !(mode & BIT(MODE_SERVICE))){
         systick++;
         if (systick >= portstate_lookup[state].period * SYSTICK_DIVIDER){
             state++;
@@ -118,8 +139,8 @@ void stepState(){
 
     PORTA = portstate_lookup[state].port_a;
     PORTC = portstate_lookup[state].port_c;
-    PORTE = portstate_lookup[state].port_e | BIT(RW_SENSE_LEFT) | BIT(RW_SENSE_RIGHT); //This for SW Pullups 
-    PORTF = portstate_lookup[state].port_f;
+    PORTE = portstate_lookup[state].port_e | BIT(RW_SENSE_LEFT) | BIT(RW_SENSE_RIGHT);              //This for SW Pullups 
+    PORTF = (portstate_lookup[state].port_f | (PORTF & BIT(RW_RED_1)) | (PORTF & BIT(RW_RED_2)) );  //RW red lamp unifying
     
 }
 
@@ -140,9 +161,17 @@ ISR(TIMER1_COMPB_vect)
         while( PING & BIT(SW_K1) );   //wait until the user release the button
     }
     if( !(PINE & BIT(RW_SENSE_LEFT)) ){
-        train |= BIT(RW_TRAIN_FROMLEFT);
+        mode |= BIT(MODE_TRAIN_FROM_LEFT);
     }
     if( !(PINE & BIT(RW_SENSE_RIGHT)) ){
-        train |= BIT(RW_TRAIN_FROMRIGHT);
+        mode |= BIT(MODE_TRAIN_FROM_RIGHT);
+    }
+    if( PING & BIT(SW_K0) ){
+        //mode ^= BIT(MODE_SERVICE_REQUEST);                                            //Bad idea
+        if(mode & BIT(MODE_SERVICE)){
+            mode &= ~BIT(MODE_SERVICE_REQUEST);                                         //SET NORMAL MODE REQUEST
+        } else {
+            mode |= BIT(MODE_SERVICE_REQUEST);                                          //SET Service mode request
+        }
     }
 }

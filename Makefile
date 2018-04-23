@@ -25,8 +25,16 @@ CLK = 16000000
 
 # this fuse bits and programer settings are fit for a bootloaded atmega88
 #PRG = arduino -P /dev/ttyUSB2 -b 19200
-PRG = jtag1 -P /dev/ttyUSB1 -b 115200
-#PRG = jtag1 -P /dev/cu.usbserial-AH01G9M0 -b 115200 
+#PRG = jtag1 -P /dev/cu.usbserial-AH01G9M0 -b 115200
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+	PRG_DEV		?= /dev/ttyUSB1
+endif
+ifeq ($(UNAME_S),Darwin)
+	PRG_DEV		?= /dev/cu.usbserial-AH01G9M0
+endif
+PRG = jtag1 -P $(PRG_DEV) -b 115200
+
 # fuse values for avr: low, high, and extended
 # see http://www.engbedded.com/fusecalc/ for other MCUs and options
 LFU = 0xe2
