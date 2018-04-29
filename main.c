@@ -44,12 +44,6 @@ uint8_t fifo_read(char *dest, uint8_t len, struct fifo_t *fifo){
 }
 
 
-#define RS485_START 0xF4;
-#define RS485_MID 0x10;
-#define RS485_SLID 0x21;
-#define RS485_MULTIC 0x30;
-#define RS485_STOP 0x4F;
-
 void main()
 {
     struct fifo_t uartFifo;
@@ -84,13 +78,4 @@ void uart0ReceiveCallBack(uint8_t data){
 
 void uart1ReceiveCallBack(uint8_t data){
     UART0_sendbyte(data);
-}
-
-void rs485_setReceiverMode(){
-    PORTC &= ~BIT(PC7);
-    PORTE &= ~BIT(PE2); 
-}
-void rs485_setTransmitMode(){
-    PORTC |= BIT(PC7);
-    PORTE |= BIT(PE2);
 }

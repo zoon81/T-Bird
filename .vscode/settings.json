@@ -12,6 +12,7 @@
         "iom128.h": "c",
         "inttypes.h": "c",
         "sevseg.h": "c",
-        "keymatrix.h": "c"
+        "keymatrix.h": "c",
+        "rs485.h": "c"
     }
 }
