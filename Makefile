@@ -17,7 +17,7 @@
 # project name
 PRJ = main
 # avr mcu
-MCU = atmega64
+MCU = atmega128
 # mcu clock frequency
 CLK = 16000000
 # avr programmer (and port if necessary)
@@ -31,7 +31,7 @@ ifeq ($(UNAME_S),Linux)
 	PRG_DEV		?= /dev/ttyUSB1
 endif
 ifeq ($(UNAME_S),Darwin)
-	PRG_DEV		?= /dev/cu.usbserial-AH05GB09
+	PRG_DEV		?= /dev/cu.usbserial-AH01G9M0
 endif
 PRG = jtag1 -P $(PRG_DEV) -b 115200
 
@@ -54,7 +54,7 @@ EXT = ./inc ./utils ./utils/inc ./HAL/ ./HAL/inc ./drivers ./drivers/inc
 # include path
 INCLUDE := $(foreach dir, $(EXT), -I$(dir))
 # c flags
-CFLAGS    = -Wall -Os -DF_CPU=$(CLK) -mmcu=$(MCU) $(INCLUDE)
+CFLAGS    = -Wall -O0 -DF_CPU=$(CLK) -mmcu=$(MCU) $(INCLUDE) -ggdb
 # any aditional flags for c++
 CPPFLAGS =
 
