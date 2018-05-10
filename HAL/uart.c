@@ -33,6 +33,13 @@ void UART1_sendbyte(uint8_t data){
     while( !(UCSR1A & (1 << UDRE1))); //wait until transmission complete
 }
 
+void UART1_sendbyte_blocking(uint8_t data){
+    while( !(UCSR1A & (1 << UDRE1))); /* Wait for empty transmit buffer */
+    UDR1 = data;
+    while( !(UCSR1A & (1 << TXC1))); /* Wait for transmit complette */
+    SETBIT(UCSR1A, TXC1);
+}
+
 uint8_t UART0_receivebyte(){
     while( !(UCSR0A & (1 << RXC0))); //wait until receive complete
     return UDR0;
@@ -47,6 +54,17 @@ void UART0_sendString(char *str){
     while( *str){
         UART0_sendbyte(*str++);
     }
+}
+void UART0_sendU8(uint8_t number){
+    char buffer[4];
+    uint8_to_str(buffer, number);
+    UART0_sendString(buffer);
+}
+
+void UART0_sendU16(uint16_t number){
+    char buffer[6];
+    uint16_to_str(buffer, number);
+    UART0_sendString(buffer);
 }
 
 void UART1_sendString(char *str){

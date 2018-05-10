@@ -1,15 +1,14 @@
 {
     "configurations": [
         {
-            "name": "AVR",
+            "name": "linux",
             "includePath": [
+                "${workspaceFolder}/inc",
+                "${workspaceFolder}/HAL/inc",
+                "${workspaceFolder}/utils/inc",
+                "${workspaceFolder}/drivers/inc",
                 "/usr/lib/avr/include",
-                "/usr/lib/avr/include/avr",
-                "${workspaceRoot}/inc",
-                "${workspaceRoot}/HAL/inc",
-                "${workspaceRoot}/utils/inc",
-                "${workspaceRoot}/drivers/inc",
-                "/usr/local/CrossPack-AVR-20131216/avr/include"
+                "/usr/lib/avr/include/avr"
             ],
             "defines": [
                 "__AVR_ATmega128__"
@@ -17,13 +16,34 @@
             "intelliSenseMode": "clang-x64",
             "browse": {
                 "path": [
-                    "/usr/lib/avr/include",
+                    "${workspaceRoot}",
+                    "/usr/lib/avr/include"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            },
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        },
+        {
+            "name": "osx",
+            "includePath": [
+                "/usr/local/CrossPack-AVR/avr/include",
+                "${workspaceFolder}/inc",
+                "${workspaceFolder}/HAL/inc",
+                "${workspaceFolder}/utils/inc",
+                "${workspaceFolder}/drivers/inc",
+                "/usr/lib/avr/include"
+            ],
+            "defines": [
+                "__AVR_ATmega128__"
+            ],
+            "intelliSenseMode": "clang-x64",
+            "browse": {
+                "path": [
                     "/usr/local/CrossPack-AVR/avr/include",
-                    "${workspaceRoot}/inc",
-                    "${workspaceRoot}/utils",
-                    "${workspaceRoot}/HAL",
-                    "${workspaceRoot}/HAL/inc",
-                    "${workspaceRoot}/drivers"
+                    "/usr/lib/avr/include"
                 ],
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": ""
@@ -33,5 +53,5 @@
             "cppStandard": "c++17"
         }
     ],
-    "version": 3
+    "version": 4
 }

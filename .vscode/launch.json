@@ -13,7 +13,8 @@
         "environment": [],
         "externalConsole": true,
         "linux": {
-          "MIMode": "gdb"
+          "MIMode": "gdb",
+          "miDebuggerPath": "avr-gdb"
         },
         "osx": {
           "MIMode": "gdb",

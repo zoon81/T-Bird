@@ -37,9 +37,9 @@ PRG = jtag1 -P $(PRG_DEV) -b 115200
 
 # fuse values for avr: low, high, and extended
 # see http://www.engbedded.com/fusecalc/ for other MCUs and options
-LFU = 0xe2
-HFU = 0xdf
-EFU = 
+LFU = 0xFF
+HFU = 0x09
+EFU = 0xFF
 # program source files (not including external libraries)
 SRC = $(PRJ).cpp
 # where to look for external libraries (consisting of .c/.cpp files and .h files)
@@ -54,7 +54,12 @@ EXT = ./inc ./utils ./utils/inc ./HAL/ ./HAL/inc ./drivers ./drivers/inc
 # include path
 INCLUDE := $(foreach dir, $(EXT), -I$(dir))
 # c flags
-CFLAGS    = -Wall -O0 -DF_CPU=$(CLK) -mmcu=$(MCU) $(INCLUDE) -ggdb
+DEBUG := 0
+ifeq ($(DEBUG), 1)
+	CFLAGS    = -Wall -O0 -DF_CPU=$(CLK) -mmcu=$(MCU) $(INCLUDE) -ggdb
+else
+	CFLAGS    = -Wall -Os -DF_CPU=$(CLK) -mmcu=$(MCU) $(INCLUDE)
+endif
 # any aditional flags for c++
 CPPFLAGS =
 

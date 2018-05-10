@@ -13,6 +13,9 @@
         "inttypes.h": "c",
         "sevseg.h": "c",
         "keymatrix.h": "c",
-        "rs485.h": "c"
+        "rs485.h": "c",
+        "twi.h": "c",
+        "adc.h": "c",
+        "rtc.h": "c"
     }
 }

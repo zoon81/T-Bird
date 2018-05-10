@@ -1,4 +1,13 @@
-#include "twi.h"
+#include "m_twi.h"
+
+void i2c_init(void)
+{
+  /* initialize TWI clock: 100 kHz clock, TWPS = 0 => prescaler = 1 */
+
+  TWSR = 0;                         /* no prescaler */
+  TWBR = ((F_CPU/SCL_CLOCK)-16)/2;  /* must be > 10 for stable operation */
+
+}/* i2c_init */
 
 uint8_t i2c_start(unsigned char address)
 {

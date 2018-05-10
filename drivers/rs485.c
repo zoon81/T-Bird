@@ -2,6 +2,9 @@
 
 void rs485_Init(uart_baud_t baudrate){
     UART1_Init(baudrate);
+    RS485_DRIVE_DD |= BIT(RS485_DRIVE_PIN);
+    RS485_RECEIVE_DD |= BIT(RS485_RECEIVE_PIN);
+    rs485_setReceiverMode();
 }
 
 void rs485_setReceiveCallBack(void (*callback) (uint8_t data) ){

@@ -10,7 +10,15 @@
 #include "keymatrix.h"
 #include "itoa.h"
 #include "uart.h"
+#include "rs485.h"
+#include "rtc.h"
+#include "adc.h"
+#include "lm35.h"
 
 #define BIT(x) (1 << (x))
+#define SETBITS(x, y) ((x) |= (y))
+#define SETBIT(x, y) SETBITS((x), (BIT((y))))
+#define CLEARBITS(x, y) ((x) &= (~(y)))
+#define CLEARBIT(x, y) CLEARBITS((x), (BIT((y))))
 
 #endif
